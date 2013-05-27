@@ -4,56 +4,40 @@ public class DCTdemo {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//demo1();
-		demo2();
+		demo1();
+		//demo2();  // for the results using YGbGr of redblack.ppm
 
 	}
 	
 	public static void demo1(){
-		int[][] input1 = new int[8][8];
+		System.out.println("Demo 1()");
+		double[][] input1 = new double[8][8];
 
-		loadInputSample(input1);
-		printArray(input1, 8);
+		getLect08page9_SampleBlock(input1);
+		printArray(input1);
 
 		System.out.println("output when not subtracting 128");
 		System.out.println("uses homework algorithm - does not match example");
-		printArray(runDCTtransform(input1), 8);
+		printArray(runDCTconvertion(input1));
 
-		int[][] input2 = new int[8][8];
-		loadInputSample(input2);
+		double[][] input2 = new double[8][8];
+		getLect08page9_SampleBlock(input2);
 		System.out.println("output when subtracting 128");
 		System.out.println("uses found algorithm - does match example");
-		printArray(dct3(input2), 8);
+		printArray(runDCTconvertionAlt(input2));
 	}
 	
 	public static void demo2() {
+		System.out.println("Demo 2()");
 		double[][] arr = new double[8][8];
 
-		loadInputSample2(arr);
-		printArray(arr, 8);
+		getRedblack_YCbCr(arr);
+		printArray(arr);
 
 		System.out.println("runDCTconvertion(arr) = ");
-		printArray(runDCTconvertion(arr), 8);
+		printArray(runDCTconvertion(arr));
 	}
 
-	// This is my original code
-	public static double[][] runDCTtransform(int[][] f) {
-		double[][] F = new double[8][8];
-		for (int u = 0; u < 8; u++) {
-			for (int v = 0; v < 8; v++) {
-
-				double subSum = 0.0;
-				for (int x = 0; x < 8; x++) {
-					for (int y = 0; y < 8; y++) {
-						// not subtracting 128
-						subSum += Math.cos(((2.0 * x + 1.0) * u * Math.PI) / (16.0)) * Math.cos(((2.0 * y + 1.0) * v * Math.PI) / (16.0)) * f[x][y];
-					}
-				}
-				F[u][v] = ((Cfunc(u) * Cfunc(v)) / 4.0) * subSum;
-			}
-		}
-		return F;
-	}
 
 	public static double Cfunc(double x) {
 		if (x == 0)
@@ -61,40 +45,12 @@ public class DCTdemo {
 		else
 			return 1.0;
 	}
-
-	// ## I modified this code from an example I found at
-	// http://www.cyut.edu.tw/~yltang/program/Dct.java
-	public static double[][] dct3(int[][] img) {
-		double in[][] = new double[8][8];
-		double dct[][] = new double[8][8];
-		double sum;
-		final int N = 8; // Block size
-
-		for (int u = 0; u < N; u++) {
-			for (int v = 0; v < N; v++) {
-
-				sum = 0;
-				for (int x = 0; x < N; x++) {
-					for (int y = 0; y < N; y++) {
-						in[x][y] = img[x][y] - 128.0; // Subtract by 128
-						sum += Math.cos((2 * (x) + 1) * (u) * Math.PI / (2 * N)) * Math.cos((2 * (y) + 1) * (v) * Math.PI / (2 * N)) * in[x][y];
-					}
-				}
-				// dct[u][v] = CC(u) * CC(v) * sum;
-				// I'm using my version of the support method to demo that the
-				// two versions are exactly
-				// the same except for subtracting 128 from the input value
-				dct[u][v] = ((Cfunc(u) * Cfunc(v)) / 4.0) * sum;
-
-			} // for v
-		} // for u
-		return dct;
-	}
 	
 	public static double[][] runDCTconvertion(double[][] f) {			
 		int sizeX = f.length;
 		int sizeY = f[0].length;
 		double[][] F = new double[sizeX][sizeY];
+		double temp[][] = new double[8][8];
 		int u, v, x, y;
 		for(int yy = 0; yy < sizeY; yy += 8){
 			for(int xx = 0; xx < sizeX; xx += 8){
@@ -119,9 +75,39 @@ public class DCTdemo {
 		return F;
 	}
 	
+	public static double[][] runDCTconvertionAlt(double[][] f) {			
+		int sizeX = f.length;
+		int sizeY = f[0].length;
+		double temp = 0.0;
+		double[][] F = new double[sizeX][sizeY];
+		int u, v, x, y;
+		for(int yy = 0; yy < sizeY; yy += 8){
+			for(int xx = 0; xx < sizeX; xx += 8){
+				
+					for(int u1 = xx; u1 < xx + 8; u1++){
+						u = u1 - xx;
+						for(int v1 = yy; v1 < yy + 8; v1++){
+							v = v1 - yy;
+							double subSum = 0.0;
+							for(int x1 = xx; x1 < xx + 8; x1++){
+								x = x1 - xx;
+								for(int y1 = yy; y1 < yy + 8; y1++){
+									y = y1 - yy;
+									temp =  f[x1][y1] - 128;
+									subSum += Math.cos(((2.0*x + 1.0)*u*Math.PI)/(16.0)) * Math.cos(((2.0*y + 1.0)*v*Math.PI)/(16.0)) * temp;
+								}
+							}
+					F[u1][v1] = Math.max(Math.min(((Cfunc(u) * Cfunc(v)) / 4.0) * subSum, 1024.0), -1024.0);
+					}
+				}	
+			}
+		}	
+		return F;
+	}
+	
 
 	
-	public static double[][] inverseDCTconvertion(double[][] Fp) {	// inverses DCT on 8x8 array blocks	
+	public static double[][] reverseDCTconvertion(double[][] Fp) {	
 		int sizeX = Fp.length;
 		int sizeY = Fp[0].length;
 		double[][] fp = new double[sizeX][sizeY];
@@ -149,41 +135,79 @@ public class DCTdemo {
 		}
 		return fp;
 	}
-
-	// his suport function works the same - just arrange differently
-	public static double CC(double k) {
-		double out = 0.0;
-		if (k == 0)
-			out = Math.sqrt(1.0 / 8.0);
-		else
-			out = Math.sqrt(2.0 / 8.0);
-		return out;
-	}
 	
-	public static void printArray(double[][] F, int N) {
-		for (int y = 0; y < N; y++) {
-			for (int x = 0; x < N; x++) {
-				System.out.format("%.1f", F[x][y]);
-				System.out.print("\t");
+	public static double[][] reverseDCTconvertionAlt(double[][] Fp) {
+		int sizeX = Fp.length;
+		int sizeY = Fp[0].length;
+		double[][] fp = new double[sizeX][sizeY];
+		int u, v, x, y;
+		
+		for(int xx = 0; xx < sizeX; xx += 8){
+			for(int yy = 0; yy < sizeY; yy += 8){
+				
+				for(int x1 = xx; x1 < xx + 8; x1++){
+					x = x1 - xx;
+					for(int y1 = yy; y1 < yy + 8; y1++){
+						y = y1 - yy;
+						double subSum = 0.0;
+						for(int u1 = xx; u1 < xx + 8; u1++){
+							u = u1 - xx;
+							for(int v1 = yy; v1 < yy + 8; v1++){
+								v = v1 - yy;
+								subSum += Cfunc(u) * Cfunc(v) * Fp[u1][v1] * Math.cos(((2.0*x + 1.0)*u*Math.PI)/(16.0)) * Math.cos(((2.0*y + 1.0)*v*Math.PI)/(16.0));
+							}
+						}
+						fp[x1][y1] = ((1.0 / 4.0) * subSum) + 128;
+					}
+				}
 			}
-			System.out.println("");
+		}
+		return fp;
+	}
+
+	
+	public static void printArray(double[] F){
+		int X = F.length;
+		for(int x = 0; x < X; x++){
+			//System.out.format("%.1d", F[u][v]);
+			System.out.print(F[x] + "  ");
+			System.out.print("\t");
 		}
 		System.out.println("");
 	}
 
-	public static void printArray(int[][] F, int N){
-		for(int y = 0; y < N; y++){
-			for(int x = 0; x < N; x++){
-				//System.out.format("%.1d", F[u][v]);
-				System.out.print(F[x][y] + "  ");
-				System.out.print("\t");
+	public static void printArray(double[][] F){
+		int X = F.length;
+		int Y = F[0].length;
+		for(int y = 0; y < Y; y++){
+			for(int x = 0; x < X; x++){
+				System.out.format("%.2f\t\t", F[x][y]);
+				//System.out.print(F[x][y] + "  ");
+				//System.out.print("\t");
 			}
 			System.out.println("");
 		}	
 		System.out.println("");
 	}
+	
+	public static void printArray(double[][][] F){
+		int X = F.length;
+		int Y = F[0].length;
+			for(int m = 0; m < 3; m++){
+			for(int y = 0; y < Y; y++){
+				for(int x = 0; x < X; x++){
+					System.out.format("%.2f\t\t", F[x][y][m]);
+					//System.out.print(F[x][y][m] + "  ");
+					//System.out.print("\t\t");
+				}
+				System.out.println("");
+			}	
+			System.out.println("");
+		}
+		System.out.println("");
+	}
 
-	private static void loadInputSample(int[][] f) {
+	private static void getLect08page9_SampleBlock(double[][] f) {
 		f[0][0] = 139;
 		f[1][0] = 144;
 		f[2][0] = 149;
@@ -257,7 +281,7 @@ public class DCTdemo {
 		f[7][7] = 158;
 	}
 	
-	private static void loadInputSample2(double[][] f) {
+	private static void getRedblack_YCbCr(double[][] f) {
 		f[0][0] = -51.755;
 		f[1][0] = -51.755;
 		f[2][0] = -128.0;

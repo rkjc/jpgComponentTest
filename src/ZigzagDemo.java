@@ -14,22 +14,42 @@ public class ZigzagDemo {
 				arrayCb[x][y] = count++;
 			}
 		}
+		System.out.println("intial block to be converted by zigzag into a sequence");
 		printArray(arrayCb);
 		
 		double[] seq1 = blockToSequence(arrayCb);
 		System.out.println("normal zigzag");
 		printArray(seq1);
 		
+		System.out.println("");
+		
 		double[] seq2 = blockToSequenceInvert(arrayCb);
 		System.out.println("inverted zigzag");
 		printArray(seq2);
 
-		//zzTableGenerator();
+		System.out.println("\n----------------------------------\n");
+		System.out.println("Using zigzags to generate aa array block\n");
+		
+		System.out.println("Normal zigzag");
+		int[][] zigzag = getZigzagPattern();
+		double[][] normZig = new double[8][8];
+		for(int i = 0; i < 64; i++){
+			normZig[zigzag[i][0]][zigzag[i][1]] = i;
+		}
+		printArray(normZig);
+		
+		System.out.println("\nInverted zigzag");
+		int[][] zigzagAlt = getZigzagPatternAlt();
+		double[][] altZig = new double[8][8];
+		for(int i = 0; i < 64; i++){
+			altZig[zigzagAlt[i][0]][zigzagAlt[i][1]] = i;
+		}
+		printArray(altZig);
 		
 	}
 	
 	public static void zzTableGenerator(){
-		int[][] zigzag = generateZigzagPattern2();
+		int[][] zigzag = getZigzagPattern();
 		for(int i = 0; i < 64; i++){
 			System.out.println("zigzag[" + i + "][0] = " + zigzag[i][1] + ";" + "  zigzag[" + i + "][1] = " + zigzag[i][0] + ";");
 		}
@@ -37,7 +57,7 @@ public class ZigzagDemo {
 	
 	public static double[] blockToSequence(double[][] input) {
 		double[] output = new double[64];
-		int[][] zigzag = generateZigzagPattern();	
+		int[][] zigzag = getZigzagPattern();	
 		for(int i = 0; i < 64; i++){
 			output[i] = input[zigzag[i][0]][zigzag[i][1]];
 		}	
@@ -46,14 +66,14 @@ public class ZigzagDemo {
 	
 	public static double[] blockToSequenceInvert(double[][] input) {
 		double[] output = new double[64];
-		int[][] zigzag = generateZigzagPatternInvert();	
+		int[][] zigzag = getZigzagPatternAlt();	
 		for(int i = 0; i < 64; i++){
 			output[i] = input[zigzag[i][0]][zigzag[i][1]];
 		}	
 		return output;
 	}
 	
-	public static int[][] generateZigzagPattern1() {
+	public static int[][] generateZigzagPatternTable() {
 		int[][] zigzag = new int [64][2];
 		
 		// x value				y value
@@ -139,7 +159,7 @@ public class ZigzagDemo {
 		return zigzag;
 	}
 
-	public static int[][] generateZigzagPattern2() {
+	public static int[][] getZigzagPattern() {
 		int[][] zigzag = new  int[64][2]; //L = 0; R = 1
 		zigzag[0][0] = 0;
 		zigzag[0][1] = 0;
@@ -216,85 +236,8 @@ public class ZigzagDemo {
 		return zigzag;
 	}
 	
-	public static int[][] generateZigzagPattern() {
-		int[][] zigzag = new  int[64][2]; //x = 0; y = 1
-		zigzag[0][0] = 0;
-		zigzag[0][1] = 0;
-		zigzag[1][0] = 1;
-		zigzag[1][1] = 0;
-		
-		int x = 1;
-		int y = 0;
-		int index = 1;	
-		
-		while(true){
-			while(x != 0){
-				index++;
-				x--;
-				y++;
-				zigzag[index][0] = x;
-				zigzag[index][1] = y;
-			}
-			if(x == 0 && y == 7)
-				break;
-			index++;
-			y++;
-			zigzag[index][0] = x;
-			zigzag[index][1] = y;
 	
-			while(y != 0 ){
-				index++;
-				x++;
-				y--;
-				zigzag[index][0] = x;
-				zigzag[index][1] = y;
-			}
-			
-			index++;
-			x++;
-			zigzag[index][0] = x;
-			zigzag[index][1] = y;
-	
-		}
-			
-			index++;
-			x++;
-			zigzag[index][0] = x;
-			zigzag[index][1] = y;
-			
-		while(true){
-			while(x != 7){
-				index++;
-				x++;
-				y--;
-				zigzag[index][0] = x;
-				zigzag[index][1] = y;
-			}
-			index++;
-			y++;
-			zigzag[index][0] = x;
-			zigzag[index][1] = y;
-			
-			while(y != 7){
-				index++;
-				x--;
-				y++;
-				zigzag[index][0] = x;
-				zigzag[index][1] = y;
-			}
-			index++;
-			x++;
-			zigzag[index][0] = x;
-			zigzag[index][1] = y;
-			
-			if(x == 7 && y == 7)
-				break;
-		}
-		return zigzag;
-	}
-	
-	
-	public static int[][] generateZigzagPatternInvert() {
+	public static int[][] getZigzagPatternAlt() {
 		int[][] zigzag = new  int[64][2]; 
 		
 		zigzag[0][0] = 0;  zigzag[0][1] = 0;

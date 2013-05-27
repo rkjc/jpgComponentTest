@@ -5,57 +5,180 @@ import java.io.PrintWriter;
 
 public class QuantizeTableFinder {
 
-	/**
-	 * @param args
-	 */
+	public static int imgOrigSizeX;
+	public static int imgOrigSizeY;
+	public static int padX;
+	public static int padY;
+	public static int sizeX;
+	public static int sizeY;
+	public static int chromaSizeX;
+	public static int chromaSizeY;
+	public static double[][][] origImgArray;
+	public static double[][][] padArrayRGB;
+	public static double[][][] arrayYCbCr;
+	public static double[][] YarrayDCT;
+	public static double[][] CbArrayDCT;
+	public static double[][] CrArrayDCT;
+	public static double[][] quantTable;
+	
+
 	public static void main(String[] args) {
 		
+		runInit();
+		
+		double[] q = new double[64];
+//		for(int i = 0; i< 64; i++) {
+//			q[i] = 4;
+//		}
+		
+//		quantTable = getYquantTableAlt1();
+//		
+//		System.out.println("");
+//		printArray(quantTable);
+//		System.out.println("");
+//		
+//		int z = 0;
+//		for(int y = 0; y < 8; y++){ 
+//			for(int x = 0; x < 8; x++){
+//				 q[z] = quantTable[x][y];
+//				z++;
+//			}
+//		}
+//		
+//		System.out.println("first q");
+//		printArray(q);
+//		System.out.println("");
+//		
+//		long count = 0;
+//		long count2 = 0;
+//		
+//		double test = 0.0;
+		
+//		while(test < 2048.0) {
+//			q[0] *= 2;
+//			
+//			//shift
+//			int i = 0;
+//			while(q[i] > 32 && i < 63){
+//				q[i] = 4;
+//				q[i + 1] *= 2;
+//				i++;
+//			}
+			
+//			int n = 0;
+//			for(int y = 0; y < 8; y++){ 
+//				for(int x = 0; x < 8; x++){
+//					quantTable[x][y] = q[n];
+//					n++;
+//				}
+//			}
+//			
+//			printArray(quantTable);
+//			
+//		double costY = runCompresionRatioCalculation(0);
+//			
+//			if(count2 % 1000l == 0l){
+//				count++;	
+//			}
+//			
+//			if(count % 100l == 0l){
+//			//	System.out.println("\ncostY = " + costY);
+//				printArray(quantTable);
+//				System.out.println("test = " + test);
+//			}
+//			
+//			
+//			if(costY == 133140.0){
+//				System.out.println("found it");
+//				printArray(quantTable);
+//				//break;
+//			}	
+//			
+//			q[0] *= 2;
+//			
+//			int m = 0;
+//			for(int y = 0; y < 8; y++){ 
+//				for(int x = 0; x < 8; x++){
+//					quantTable[x][y] = q[m];
+//					m++;
+//				}
+//			}
+//			
+//			printArray(quantTable);
+//			
+//			costY = runCompresionRatioCalculation(0);
+//			
+//			if(costY == 133140.0){
+//				System.out.println("found it");
+//				printArray(quantTable);
+//				//break;
+//			}	
+//			
+//			test = 0.0;
+//			for(int m = 0; m< 64; m++) {
+//				test += q[m];
+//			}
+			
+			
+//		}
+		
+//		System.out.println("finished");
+		
+	
+		runCompresionRatioCalculation(0);	
+		//runCompresionRatioCalculation(5);
+		
+	}
+	
+
+	
+	
+	public static void runInit() {
 		File file = new File("Ducky.ppm");
-		int quality = 0;
+		//int quality = 0;
 		Image origImg;
 		origImg = new Image(file.getAbsolutePath());
 		//origImg.display(file.getName() + "-original image");
 		
 		// Get and store original size
-		int imgOrigSizeX = origImg.getW();
-		int imgOrigSizeY = origImg.getH();
-		int padX = 0;
+		imgOrigSizeX = origImg.getW();
+		imgOrigSizeY = origImg.getH();
+		padX = 0;
 		if(imgOrigSizeX % 8 > 0)
 			padX = 8 - imgOrigSizeX % 8;
-		int padY = 0;
+		padY = 0;
 		if(imgOrigSizeY % 8 > 0)
 			padY = 8 - imgOrigSizeY % 8;
 		
-		int sizeX = imgOrigSizeX + padX;
-		int sizeY = imgOrigSizeY + padY;
+		sizeX = imgOrigSizeX + padX;
+		sizeY = imgOrigSizeY + padY;
 		
 		// Calculate size of Cb and Cr subsample image arrays, greater than (image size/2) and divisible by 8
-		int chromaSizeX = (sizeX / 2);
+		chromaSizeX = (sizeX / 2);
 		if(chromaSizeX % 8 > 0)
 			chromaSizeX += 8 - chromaSizeX % 8;
 		
-		int chromaSizeY = (sizeY / 2);
+		chromaSizeY = (sizeY / 2);
 		
 		if(chromaSizeY % 8 > 0)
 			chromaSizeY += 8 - chromaSizeY % 8;
 		
-//		System.out.println("imgOrigSizeX = " + origImg.getW());
-//		System.out.println("imgOrigSizeY = " + origImg.getH());
-//		System.out.println("padX = " + padX);
-//		System.out.println("padY = " + padY);
-//		System.out.println("sizeX = " + sizeX);
-//		System.out.println("sizeY = " + sizeY);
-//		System.out.println("chromaSizeX = " + chromaSizeX);
-//		System.out.println("chromaSizeY = " + chromaSizeY);
+		System.out.println("imgOrigSizeX = " + origImg.getW());
+		System.out.println("imgOrigSizeY = " + origImg.getH());
+		System.out.println("padX = " + padX);
+		System.out.println("padY = " + padY);
+		System.out.println("sizeX = " + sizeX);
+		System.out.println("sizeY = " + sizeY);
+		System.out.println("chromaSizeX = " + chromaSizeX);
+		System.out.println("chromaSizeY = " + chromaSizeY);
 		
 		// Convert original image to an Array
-		double[][][] origImgArray = imageRGBtoDoubleArray(origImg);
+		origImgArray = imageRGBtoDoubleArray(origImg);
 		
 		// Pad Array size to multiple of 8
-		double[][][] padArrayRGB = padImageArray(origImgArray, padX, padY);
+		padArrayRGB = padImageArray(origImgArray, padX, padY);
 		
-		// Transform each pixel	from RGB to YCbCr		
-		double[][][] arrayYCbCr = new double[sizeX][sizeY][3];
+		arrayYCbCr = new double[sizeX][sizeY][3];
 		for(int y = 0; y < sizeY; y++){
 			for(int x = 0; x < sizeX; x++){	
 				//ycbcr[][][3] = convert(rgb[][][3])
@@ -92,168 +215,112 @@ public class QuantizeTableFinder {
 		}
 					
 		// Perform the DCT for Y image, Cb image, and Cr image 
-		double[][] YarrayDCT = runDCTconvertion(arrayY);
-		double[][] CbArrayDCT = runDCTconvertion(subSampleCb);
-		double[][] CrArrayDCT = runDCTconvertion(subSampleCr);
+		YarrayDCT = runDCTconvertion(arrayY);
+		CbArrayDCT = runDCTconvertion(subSampleCb);
+		CrArrayDCT = runDCTconvertion(subSampleCr);
 		
-		// Define for use outside the compression ratio output loop
+		
+	}
+	
+		
+	public static double runCompresionRatioCalculation(int quality){
+	
 		double[][] quantizedY = new double [sizeX][sizeY];
 		double[][] quantizedCb = new double [chromaSizeX][chromaSizeY];
 		double[][] quantizedCr = new double [chromaSizeX][chromaSizeY];
 		
-		System.out.println("\n" + file.getName());
+	
+		// Quantize image components
+		quantizedY = quantizeLuma(YarrayDCT, quality);
+		quantizedCb = quantizeChroma(CbArrayDCT, quality);
+		quantizedCr = quantizeChroma(CrArrayDCT, quality);
+		
+		
+		// Calculate component compression costs
+		double totalCost = 0;
+		double countY = 0;
+		double countCb = 0;
+		double countCr = 0;
+		double bitCostY = 0;
+		double bitCostCb = 0;
+		double bitCostCr = 0;
+		double origCost = 0;
+		
+		//System.out.println("\nFor a quantization level n = " + quality);
+		
+		origCost = imgOrigSizeX * imgOrigSizeY * 24;
+		//System.out.println("The original image cost, (S), is " + origCost);
+		
+		//loop through all the image 8x8 blocks and quantize the values
+		for(int xx = 0; xx < sizeX; xx += 8){
+			for(int yy = 0; yy < sizeY; yy += 8){
+				double[][] block = new double[8][8];
+				for(int y = 0; y < 8; y++){
+					for(int x = 0; x < 8; x++){
+						block[x][y] = quantizedY[xx + x][yy + y];
+					}
+				}
+		
+				System.out.println("sizeX = " + sizeX )	;																//System.out.println("block = ");
+			printArray(block);
+				// Convert from 2D block to 1D sequence (zigzag)
+				double[] sequence = blockToSequenceInvert(block);
+				// Perform a run length encode of 1D sequence and count number of sequence pairs for the AC component
+				bitCostY += (9 - quality);  // Adds the DC for that block
+				countY = runLengthEncode(sequence); 
+				bitCostY += (15 - quality) * countY;
+			}
+		}
+		//System.out.println("The Y values cost is " + bitCostY + " bits.");
+		
 
-		
-		// ############ Calculate compression ratio ############	
-		
-		
-		
-			// Quantize image components
-			quantizedY = quantizeLuma(YarrayDCT, quality);
-			quantizedCb = quantizeChroma(CbArrayDCT, quality);
-			quantizedCr = quantizeChroma(CrArrayDCT, quality);
-			
-			
-			// Calculate component compression costs
-			double totalCost = 0;
-			double countY = 0;
-			double countCb = 0;
-			double countCr = 0;
-			double bitCostY = 0;
-			double bitCostCb = 0;
-			double bitCostCr = 0;
-			double origCost = 0;
-			
-			System.out.println("\nFor a quantization level n = " + quality);
-			
-			origCost = imgOrigSizeX * imgOrigSizeY * 24;
-			System.out.println("The original image cost, (S), is " + origCost);
-			
-			//loop through all the image 8x8 blocks and quantize the values
-			for(int xx = 0; xx < sizeX; xx += 8){
-				for(int yy = 0; yy < sizeY; yy += 8){
-					double[][] block = new double[8][8];
-					for(int y = 0; y < 8; y++){
-						for(int x = 0; x < 8; x++){
-							block[x][y] = quantizedY[xx + x][yy + y];
-						}
-					}
-					// Convert from 2D block to 1D sequence (zigzag)
-					double[] sequence = blockToSequenceInvert(block);
-					// Perform a run length encode of 1D sequence and count number of sequence pairs for the AC component
-					bitCostY += (9 - quality);  // Adds the DC for that block
-					countY = runLengthEncode(sequence); 
-					bitCostY += (15 - quality) * countY;
-				}
-			}
-			System.out.println("The Y values cost is " + bitCostY + " bits.");
-			
-	
-			for(int xx = 0; xx < chromaSizeX; xx += 8){
-				for(int yy = 0; yy < chromaSizeY; yy += 8){
-					
-					double[][] block = new double[8][8];
-					for(int y = 0; y < 8; y++){
-						for(int x = 0; x < 8; x++){
-							block[x][y] = quantizedCb[xx + x][yy + y];
-						}
-					}
-					// Convert from 2D block to 1D sequence (zigzag)
-					double[] sequence = blockToSequenceInvert(block);
-					// Perform a run length encode of 1D sequence and count number of sequence pairs
-					bitCostCb += (8 - quality);
-					countCb = runLengthEncode(sequence);
-					bitCostCb += (14 - quality) * countCb;
-				}
-			}
-			System.out.println("The Cb values cost is " + bitCostCb + " bits.");
-			
-	
-			for(int xx = 0; xx < chromaSizeX; xx += 8){
-				for(int yy = 0; yy < chromaSizeY; yy += 8){
-					double[][] block = new double[8][8];
-					for(int y = 0; y < 8; y++){
-						for(int x = 0; x < 8; x++){
-							block[x][y] = quantizedCr[xx + x][yy + y];
-						}
-					}
-					// Convert from 2D block to 1D sequence (zigzag)
-					double[] sequence = blockToSequenceInvert(block);
-					// Perform a run length encode of 1D sequence and count number of sequence pairs
-					bitCostCr += (8 - quality);
-					countCr = runLengthEncode(sequence);
-					bitCostCr += (14 - quality) * countCr;
-				}
-			}
-			System.out.println("The Cr values cost is " + bitCostCr + " bits.");
-			
-			// Calculate total compression costs
-			totalCost = bitCostY + bitCostCb + bitCostCr;
-			System.out.println("The total compressed image cost, (D), is " + totalCost + " bits.");
-			
-			System.out.println("The compression ratio, (S/D), is " + origCost/totalCost);
-			
-		
-		// ############ END Calculate compression ratio ############
-		
-		// *** at this point the image is a JPG(ish) thing *** 
-		
-//		// Undo all the conversions
-//			// De-Quantize the image
-//			double[][] deQuantizedY = deQuantizeLuma(quantizedY, quality);
-//			double[][] deQuantizedCb = deQuantizeChroma(quantizedCb, quality);
-//			double[][] deQuantizedCr = deQuantizeChroma(quantizedCr, quality);
-//			
-//			// Undo the DCT for Cb image and Cr image and the Y image
-//			double[][] invDctArrayY = inverseDCTconvertion(deQuantizedY);
-//			double[][] invDctArrayCb = inverseDCTconvertion(deQuantizedCb);
-//			double[][] invDctArrayCr = inverseDCTconvertion(deQuantizedCr);
-//			
-//			// Supersample prep
-//			double[][] outArrayY = new double[sizeX][sizeY];
-//			double[][] outArrayCb = new double[sizeX][sizeY];
-//			double[][] outArrayCr = new double[sizeX][sizeY];
+//		for(int xx = 0; xx < chromaSizeX; xx += 8){
+//			for(int yy = 0; yy < chromaSizeY; yy += 8){
 //				
-//			outArrayY = invDctArrayY;
-//			// Supersample
-//			for(int y = 0; y < sizeY; y++){
-//				for(int x = 0; x < sizeX; x++){
-//					outArrayCb[x][y] = invDctArrayCb[x/2][y/2];
-//					outArrayCr[x][y] = invDctArrayCr[x/2][y/2];
+//				double[][] block = new double[8][8];
+//				for(int y = 0; y < 8; y++){
+//					for(int x = 0; x < 8; x++){
+//						block[x][y] = quantizedCb[xx + x][yy + y];
+//					}
 //				}
+//				// Convert from 2D block to 1D sequence (zigzag)
+//				double[] sequence = blockToSequenceInvert(block);
+//				// Perform a run length encode of 1D sequence and count number of sequence pairs
+//				bitCostCb += (8 - quality);
+//				countCb = runLengthEncode(sequence);
+//				bitCostCb += (14 - quality) * countCb;
 //			}
-//			
-//			// Recombine the separate arrays into a single image array
-//			double[][][] outYCbCrArray = new double[sizeX][sizeY][3];
-//			for(int y = 0; y < sizeY; y++){
-//				for(int x = 0; x < sizeX; x++){	
-//					 outYCbCrArray[x][y][0] = outArrayY[x][y];
-//					 outYCbCrArray[x][y][1] = outArrayCb[x][y];
-//					 outYCbCrArray[x][y][2] = outArrayCr[x][y];
+//		}
+//		//System.out.println("The Cb values cost is " + bitCostCb + " bits.");
+//		
+//
+//		for(int xx = 0; xx < chromaSizeX; xx += 8){
+//			for(int yy = 0; yy < chromaSizeY; yy += 8){
+//				double[][] block = new double[8][8];
+//				for(int y = 0; y < 8; y++){
+//					for(int x = 0; x < 8; x++){
+//						block[x][y] = quantizedCr[xx + x][yy + y];
+//					}
 //				}
+//				// Convert from 2D block to 1D sequence (zigzag)
+//				double[] sequence = blockToSequenceInvert(block);
+//				// Perform a run length encode of 1D sequence and count number of sequence pairs
+//				bitCostCr += (8 - quality);
+//				countCr = runLengthEncode(sequence);
+//				bitCostCr += (14 - quality) * countCr;
 //			}
-//						
-//			// Reconverting the YCbCr image back into an RGB image 
-//			double[][][] outPadImgArrayRGB = new double[sizeX][sizeY][3];
-//			
-//			for(int y = 0; y < sizeY; y++){
-//				for(int x = 0; x < sizeX; x++){
-//					outPadImgArrayRGB[x][y] =  matrixYCbCRtoRGB(outYCbCrArray[x][y]);
-//					//debug bypass
-//					//outPadImgArrayRGB[x][y] =  matrixYCbCRtoRGB(arrayYCbCr[x][y]);
-//				}
-//			}
-//			
-//			// Remove the padding
-//			double[][][] outImgArrayRGB = unPadImageArray(outPadImgArrayRGB, padX, padY);
-			
-			//display the RGB image
-			//System.out.println("\n---------------------------------\ndisplaying reconverted output image");
-//			Image outImgRGB = arrayRGBtoImage(outImgArrayRGB);
-//			outImgRGB.display("imgRGB2-quantization= " + quality);
-			
+//		}
+		//System.out.println("The Cr values cost is " + bitCostCr + " bits.");
+		
+		// Calculate total compression costs
+		totalCost = bitCostY + bitCostCb + bitCostCr;
+		//System.out.println("The total compressed image cost, (D), is " + totalCost + " bits.");
+		
+		//System.out.println("The compression ratio, (S/D), is " + origCost/totalCost);
 		
 		
+		return bitCostY;
+			
 	}
 	
 	
@@ -443,8 +510,9 @@ public class QuantizeTableFinder {
 		int sizeX = input.length;
 		int sizeY = input[0].length;
 		double[][] output = new double[sizeX][sizeY];
-		double[][] YquantTable = getYquantTableAlt1();  // debug
-		//double[][] YquantTable = getYquantTable();
+		//double[][] YquantTable = getYquantTableAlt1();  // debug
+		double[][] YquantTable = getYquantTable();
+		//printArray(YquantTable);
 		for(int xx = 0; xx < sizeX; xx += 8){
 			for(int yy = 0; yy < sizeY; yy += 8){
 				
@@ -574,6 +642,30 @@ public class QuantizeTableFinder {
 			output[i] = input[zigzag[i][0]][zigzag[i][1]];
 		}	
 		return output;
+	}
+	
+	public static void printArray(double[] F){
+		int X = F.length;
+		for(int x = 0; x < X; x++){
+			//System.out.format("%.1d", F[u][v]);
+			System.out.print(F[x] + "  ");
+			System.out.print("\t");
+		}
+		System.out.println("");
+	}
+	
+	public static void printArray(double[][] F){
+		int X = F.length;
+		int Y = F[0].length;
+		for(int y = 0; y < Y; y++){
+			for(int x = 0; x < X; x++){
+				//System.out.format("%.1d", F[u][v]);
+				System.out.print(F[x][y] + "  ");
+				System.out.print("\t");
+			}
+			System.out.println("");
+		}	
+		System.out.println("");
 	}
 	
 	public static int[][] generateZigzagPatternInvert() {
@@ -739,6 +831,10 @@ public class QuantizeTableFinder {
 	}
 	
 	
+//	public static double[][] getYquantTable() {
+//		return quantTable;
+//	}
+	
 	
 	public static double[][] getYquantTable() {
 		double[][] table = new double[8][8];
@@ -821,7 +917,7 @@ public class QuantizeTableFinder {
 	public static double[][] getYquantTableAlt1() {
 		double[][] table = new double[8][8];
 		
-		table[0][0] = 4;
+		table[0][0] = 2;
 		table[1][0] = 4;
 		table[2][0] = 4;
 		table[3][0] = 8;
@@ -832,17 +928,17 @@ public class QuantizeTableFinder {
 		
 		table[0][1] = 4;
 		table[1][1] = 4;
-		table[2][1] = 8;
+		table[2][1] = 4;
 		table[3][1] = 8;
-		table[4][1] = 16;
+		table[4][1] = 8;
 		table[5][1] = 16;
 		table[6][1] = 16;
 		table[7][1] = 32;
 		
 		table[0][2] = 4;
-		table[1][2] = 8;
+		table[1][2] = 4;
 		table[2][2] = 8;
-		table[3][2] = 16;
+		table[3][2] = 8;
 		table[4][2] = 16;
 		table[5][2] = 16;
 		table[6][2] = 32;
@@ -850,7 +946,7 @@ public class QuantizeTableFinder {
 		
 		table[0][3] = 8;
 		table[1][3] = 8;
-		table[2][3] = 16;
+		table[2][3] = 8;
 		table[3][3] = 16;
 		table[4][3] = 16;
 		table[5][3] = 32;
@@ -858,7 +954,7 @@ public class QuantizeTableFinder {
 		table[7][3] = 32;
 		
 		table[0][4] = 8;
-		table[1][4] = 16;
+		table[1][4] = 8;
 		table[2][4] = 16;
 		table[3][4] = 16;
 		table[4][4] = 32;

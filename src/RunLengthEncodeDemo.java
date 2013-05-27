@@ -12,7 +12,7 @@ public class RunLengthEncodeDemo {
 	
 		double[][] block = getCromeQuant();
 		
-		printArray(block, 8);
+		printArray(block);
 		
 		double[] sequence = blockToSequence(block);
 		
@@ -136,14 +136,44 @@ public class RunLengthEncodeDemo {
 		return zigzag;
 	}
 	
-	public static void printArray(double[][] F, int N){
-		for(int u = 0; u < N; u++){
-			for(int v = 0; v < N; v++){
-				System.out.format("%.1f", F[u][v]);
-				System.out.print("\t");
+	public static void printArray(double[] F){
+		int X = F.length;
+		for(int x = 0; x < X; x++){
+			//System.out.format("%.1d", F[u][v]);
+			System.out.print(F[x] + "  ");
+			System.out.print("\t");
+		}
+		System.out.println("");
+	}
+
+	public static void printArray(double[][] F){
+		int X = F.length;
+		int Y = F[0].length;
+		for(int y = 0; y < Y; y++){
+			for(int x = 0; x < X; x++){
+				System.out.format("%.2f\t\t", F[x][y]);
+				//System.out.print(F[x][y] + "  ");
+				//System.out.print("\t");
 			}
 			System.out.println("");
-		}		
+		}	
+		System.out.println("");
+	}
+	
+	public static void printArray(double[][][] F){
+		int X = F.length;
+		int Y = F[0].length;
+			for(int m = 0; m < 3; m++){
+			for(int y = 0; y < Y; y++){
+				for(int x = 0; x < X; x++){
+					System.out.format("%.2f\t\t", F[x][y][m]);
+					//System.out.print(F[x][y][m] + "  ");
+					//System.out.print("\t\t");
+				}
+				System.out.println("");
+			}	
+			System.out.println("");
+		}
 		System.out.println("");
 	}
 	
