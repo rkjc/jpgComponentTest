@@ -14,7 +14,7 @@ public class ZigzagDemo {
 				arrayCb[x][y] = count++;
 			}
 		}
-		System.out.println("intial block to be converted by zigzag into a sequence");
+		System.out.println("Starting with a block to be converted by zigzag into a sequence");
 		printArray(arrayCb);
 		
 		double[] seq1 = blockToSequence(arrayCb);
@@ -28,7 +28,7 @@ public class ZigzagDemo {
 		printArray(seq2);
 
 		System.out.println("\n----------------------------------\n");
-		System.out.println("Using zigzags to generate aa array block\n");
+		System.out.println("Using zigzags to generate an array block\n");
 		
 		System.out.println("Normal zigzag");
 		int[][] zigzag = getZigzagPattern();
